@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>信息核验 · 在线查询</title>
+<style>
+  *,*::before,*::after{ box-sizing:border-box; }
+  :root{
+    --brand:#1b4f8c;
+    --brand-soft:#eaf1f9;
+    --ink:#1c1c1e;
+    --ink-2:#48484a;
+    --ink-3:#8a8a8e;
+    --line:#eceef1;
+    --bg:#f4f5f7;
+    --code:#b3261e;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","微软雅黑","PingFang SC","Hiragino Sans GB",sans-serif;
+  }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--font); font-size:15px; line-height:1.6;
+    -webkit-text-size-adjust:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    max-width:480px; margin:0 auto; min-height:100vh; background:#fff;
+    box-shadow:0 0 0 1px rgba(16,24,40,.05), 0 8px 30px rgba(16,24,40,.06);
+    display:flex; flex-direction:column;
+  }
+
+  /* ---------- 顶部：标题栏 + 导航栏 ---------- */
+  .topbar{ display:flex; align-items:center; gap:10px; padding:11px 14px; border-bottom:1px solid var(--line); }
+  .topbar .ico{ width:20px; height:20px; flex:0 0 auto; color:var(--ink-2); display:block; }
+  .topbar .ttl{ flex:1 1 auto; font-size:14.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
+
+  .navbar{ display:flex; align-items:center; gap:8px; padding:12px 14px; }
+  .navbar .brandmark{
+    width:22px; height:22px; flex:0 0 auto; border-radius:5px;
+    background:var(--brand); color:#fff; font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; letter-spacing:0;
+  }
+  .navbar .orgname{ font-size:15px; font-weight:600; }
+  .navbar .divider{ color:var(--ink-3); margin:0 2px; }
+  .navbar .channel{ font-size:13px; color:var(--ink-2); }
+  .navbar .spacer{ flex:1 1 auto; }
+  .navbar .ico{ width:19px; height:19px; color:var(--ink-2); display:block; }
+
+  /* ---------- 语种 / 操作条 ---------- */
+  .langbar{
+    display:flex; align-items:center; gap:8px;
+    padding:9px 14px; background:#fafbfc; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .langbar .lbl{ color:var(--ink-3); margin-right:2px; }
+  .langbar button{
+    font:inherit; font-size:13px; padding:3px 12px; border-radius:5px;
+    border:1px solid transparent; background:transparent; color:var(--ink-2); cursor:pointer;
+  }
+  .langbar button.active{ background:var(--brand-soft); border-color:#cfdff1; color:var(--brand); font-weight:600; }
+  .langbar .spacer{ flex:1 1 auto; }
+  .langbar .ico{ width:19px; height:19px; color:var(--ink-2); cursor:pointer; display:block; }
+
+  /* ---------- 报告主体 ---------- */
+  .sheet{ flex:1 1 auto; padding:26px 22px 20px; }
+  h1{
+    font-size:19px; font-weight:700; text-align:center; letter-spacing:.5px;
+    margin:0 0 20px; line-height:1.45;
+  }
+  .photo{
+    width:88px; height:128px; margin:0 auto 24px;
+    border:1px solid #dfe3e8; border-radius:3px; background:#fafbfc;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; color:var(--ink-3); letter-spacing:1px; text-align:center;
+  }
+  .photo img{ width:100%; height:100%; object-fit:cover; border-radius:2px; display:block; }
+
+  /* 无框两列字段 */
+  .fields{ margin:0; }
+  .field{ display:flex; gap:12px; padding:7px 2px; }
+  .field dt{
+    flex:0 0 76px; margin:0; color:var(--ink-3); font-size:14px;
+    word-break:keep-all;
+  }
+  .field dd{ flex:1 1 auto; margin:0; font-size:14px; color:var(--ink); word-break:break-all; }
+  .ph{ color:#a8adb5; }
+  .field.is-code dd{ font-weight:700; color:var(--code); letter-spacing:1.5px; font-family:ui-monospace,Consolas,"Courier New",monospace; font-size:15px; }
+  .field.is-code dd.ph{ color:#a8adb5; font-weight:400; letter-spacing:0; font-family:inherit; font-size:14px; }
+  .hairline{ height:1px; background:var(--line); margin:10px 0; }
+
+  /* ---------- 页脚 ---------- */
+  .foot{
+    padding:18px 22px 26px; text-align:center;
+    font-size:11.5px; color:var(--ink-3); line-height:1.9;
+  }
+  .foot .issuer{ margin-bottom:2px; }
+  .note{
+    margin-top:14px; padding:12px 14px; background:#fafbfc; border:1px solid var(--line); border-radius:8px;
+    font-size:11.5px; color:var(--ink-2); text-align:left; line-height:1.85;
+  }
+  .note b{ font-weight:600; color:var(--ink); }
+
+  @media (min-width:481px){
+    body{ padding:24px 0; }
+    .app{ min-height:auto; border-radius:12px; overflow:hidden; }
+  }
+
+  /* ---------- 打印 / 存 PDF ---------- */
+  @page{ size:A4; margin:16mm; }
+  @media print{
+    body{ background:#fff; padding:0; font-size:12pt; }
+    .app{ max-width:none; box-shadow:none; min-height:auto; }
+    .navbar .ico,.langbar .ico,.topbar .ico{ display:none; }
+    .langbar{ background:#fff; }
+    .note{ background:#fff; }
+    .ph{ color:#333; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- 顶部标题栏 -->
+  <div class="topbar">
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    <div class="ttl" id="topTitle">信息核验报告</div>
+    <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
+  </div>
+
+  <!-- 机构导航栏 -->
+  <div class="navbar">
+    <div class="brandmark" id="brandMark">机</div>
+    <span class="orgname" id="navOrg">【机构名称】</span>
+    <span class="divider">|</span>
+    <span class="channel" id="navChannel">信息核验</span>
+    <span class="spacer"></span>
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+  </div>
+
+  <!-- 语种 / 打印 -->
+  <div class="langbar">
+    <span class="lbl" id="langLabel">报告语种</span>
+    <button type="button" data-lang="zh" class="active">中文</button>
+    <button type="button" data-lang="en">English</button>
+    <span class="spacer"></span>
+    <svg class="ico" id="printBtn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="打印 / 保存为 PDF"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 01-2-2v-4a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>
+  </div>
+
+  <!-- 报告主体 -->
+  <div class="sheet">
+    <h1 id="docTitle">信息核验报告</h1>
+    <div class="photo" id="photo">照 片 位</div>
+    <dl class="fields" id="fields"></dl>
+  </div>
+
+  <div class="foot">
+    <div class="issuer" id="footIssuer">主办单位：【机构名称】</div>
+    <div id="footCopy">Copyright © 2026 【机构名称】 All Rights Reserved</div>
+    <div class="note" id="footNote"></div>
+  </div>
+
+</div>
+
+<script>
+/* =======================================================================
+   要改的就是下面这一个 CONFIG，其余代码不用动。
+   value 里带【】的都是占位符，替换成真实内容即可。
+   ======================================================================= */
+const CONFIG = {
+  topTitle:  { zh: "信息核验报告",                en: "Verification Report" },
+  docTitle:  { zh: "信息核验报告",                en: "Information Verification Report" },
+  org:       { zh: "【机构名称】",                en: "【Organization】" },
+  channel:   { zh: "信息核验",                    en: "Verification" },
+  issuer:    { zh: "主办单位：【机构名称】",       en: "Issued by 【Organization】" },
+  copyright: { zh: "Copyright © 2026 【机构名称】 All Rights Reserved",
+               en: "Copyright © 2026 【Organization】 All Rights Reserved" },
+  notice: {
+    zh: "<b>说明：</b>1. 本页内容由出具机构提供，仅供在线核验使用，不作为其他用途的证明文件。<br>2. 核验码为查询凭据，请在有效期内使用；如需留存，点击右上角打印图标可保存为 PDF。",
+    en: "<b>Note:</b> 1. This page is provided by the issuing organization for online verification only.<br>2. The verification code is valid within its validity period. Use the print icon to save as PDF."
+  },
+  fields: [
+    { key:"name",   zh:"姓名",     en:"Name",            value:"【姓名】" },
+    { key:"gender", zh:"性别",     en:"Gender",          value:"【性别】" },
+    { key:"birth",  zh:"出生日期", en:"Date of Birth",   value:"【YYYY-MM-DD】" },
+    { key:"idno",   zh:"证件号码", en:"ID Number",       value:"【证件类型 + 号码】" },
+    { key:"org",    zh:"所属机构", en:"Organization",    value:"【所属机构全称】" },
+    { key:"type",   zh:"类别",     en:"Category",        value:"【如：全日制本科 / 正式在职】" },
+    { key:"no",     zh:"编号",     en:"Reference No.",   value:"【编号】" },
+    { key:"status", zh:"当前状态", en:"Status",          value:"【如：正常 / 有效】" },
+    { key:"period", zh:"有效期限", en:"Valid Period",    value:"【起】至【止】" },
+    { key:"updated",zh:"更新日期", en:"Last Updated",    value:"【YYYY-MM-DD】" },
+    { key:"code",   zh:"核验码",   en:"Verification Code", value:"【核验码】", code:true }
+  ]
+};
+
+/* ------------------------- 以下不用改 ------------------------- */
+const $ = id => document.getElementById(id);
+let lang = "zh";
+
+function render(){
+  const t = k => (CONFIG[k] ? CONFIG[k][lang] : "");
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+  $("topTitle").textContent = t("topTitle");
+  $("docTitle").textContent = t("docTitle");
+  $("navOrg").textContent   = t("org");
+  $("navChannel").textContent = t("channel");
+  $("brandMark").textContent = (t("org").replace(/[【】]/g, "").trim()[0] || "机");
+  $("langLabel").textContent = lang === "zh" ? "报告语种" : "Language";
+  $("footIssuer").textContent = t("issuer");
+  $("footCopy").textContent = t("copyright");
+  $("footNote").innerHTML = CONFIG.notice[lang];
+  document.title = t("docTitle");
+
+  const dl = $("fields");
+  dl.innerHTML = "";
+  CONFIG.fields.forEach(f => {
+    if (f.code) { const hr = document.createElement("div"); hr.className = "hairline"; dl.append(hr); }
+    const row = document.createElement("div");
+    row.className = "field" + (f.code ? " is-code" : "");
+    const dt = document.createElement("dt"); dt.textContent = f[lang];
+    const dd = document.createElement("dd");
+    if (f.key === "code") { dd.id = "codeValue"; }
+    dd.textContent = f.value;
+    row.append(dt, dd); dl.append(row);
+  });
+
+  // ?code=XXXX 直接把核验码填进去，方便给每个人发不同的链接
+  const q = new URLSearchParams(location.search).get("code");
+  const codeEl = $("codeValue");
+  const codeField = CONFIG.fields.find(f => f.key === "code");
+  if (q && codeEl && codeField) codeEl.textContent = q.toUpperCase();
+  if (codeEl && !q && /^【/.test(codeEl.textContent)) codeEl.classList.add("ph");
+}
+
+document.querySelectorAll(".langbar button[data-lang]").forEach(b => {
+  b.addEventListener("click", () => {
+    lang = b.dataset.lang;
+    document.querySelectorAll(".langbar button[data-lang]").forEach(x => x.classList.toggle("active", x === b));
+    render();
+  });
+});
+$("printBtn").addEventListener("click", () => window.print());
+render();
+</script>
+</body>
+</html>
