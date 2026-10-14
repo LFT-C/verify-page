@@ -78,17 +78,16 @@
   .photo img{ width:100%; height:100%; object-fit:cover; border-radius:2px; display:block; }
 
   /* 无框两列字段 */
-  .fields{ margin:0; }
-  .field{ display:flex; gap:12px; padding:5px 2px; }
+  .fields{ margin:0 auto; max-width:340px; }
+  .field{ display:flex; gap:12px; padding:8px 2px; }
   .field dt{
-    flex:0 0 76px; margin:0; color:var(--ink-3); font-size:14px;
+    flex:0 0 78px; margin:0; color:var(--ink-3); font-size:15px; text-align:right;
     word-break:keep-all;
   }
-  .field dd{ flex:1 1 auto; margin:0; font-size:14px; color:var(--ink); word-break:break-all; }
+  .field dd{ flex:1 1 auto; margin:0; font-size:15px; color:var(--ink); word-break:break-all; }
   .ph{ color:#a8adb5; }
   .field.is-code dd{ font-weight:700; color:var(--code); letter-spacing:1.5px; font-family:ui-monospace,Consolas,"Courier New",monospace; font-size:15px; }
   .field.is-code dd.ph{ color:#a8adb5; font-weight:400; letter-spacing:0; font-family:inherit; font-size:14px; }
-  .hairline{ height:1px; background:var(--line); margin:10px 0; }
 
   /* ---------- 二维码 ---------- */
   .qrbox{
@@ -142,6 +141,7 @@
     <span class="channel" id="navChannel">信息核验</span>
     <span class="spacer"></span>
     <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
   </div>
 
   <!-- 语种 / 打印 -->
@@ -2534,7 +2534,6 @@ function render(){
   const dl = $("fields");
   dl.innerHTML = "";
   CONFIG.fields.forEach(f => {
-    if (f.code) { const hr = document.createElement("div"); hr.className = "hairline"; dl.append(hr); }
     const row = document.createElement("div");
     row.className = "field" + (f.code ? " is-code" : "");
     const dt = document.createElement("dt"); dt.textContent = f[lang];
