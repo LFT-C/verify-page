@@ -75,7 +75,15 @@
     display:flex; align-items:center; justify-content:center;
     font-size:11px; color:var(--ink-3); letter-spacing:1px; text-align:center;
   }
-  .photo img{ width:100%; height:100%; object-fit:cover; border-radius:2px; display:block; }
+  /* 照片位：把同目录下的 photo.jpg 放上去就显示，没有这张图就显示占位文字 */
+  .photo{ position:relative; overflow:hidden; }
+  .photo .ph{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:11px; color:var(--ink-3); letter-spacing:1px; text-align:center;
+  }
+  .photo img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;
+  }
 
   /* 无框两列字段 */
   .fields{ margin:0 auto; max-width:340px; }
@@ -149,7 +157,11 @@
   <!-- 报告主体 -->
   <div class="sheet">
     <h1 id="docTitle">信息核验报告</h1>
-    <div class="photo" id="photo">照 片 位</div>
+    <div class="photo" id="photo">
+      <span class="ph">照 片 位</span>
+      <!-- 换照片：把同目录的 photo.jpg 换成你的图即可，别的都不用动 -->
+      <img src="photo.jpg" alt="照片" onerror="this.style.display='none'">
+    </div>
     <dl class="fields" id="fields"></dl>
 
   </div>
